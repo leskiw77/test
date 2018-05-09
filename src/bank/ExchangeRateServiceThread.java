@@ -24,10 +24,6 @@ public class ExchangeRateServiceThread extends Thread {
 
     @Override
     public void run() {
-        getRate();
-    }
-
-    private void getRate() {
         CurrencyList currencyList = CurrencyList.newBuilder()
                 .addAllChosenCurrencies(currencies)
                 .build();
@@ -43,7 +39,6 @@ public class ExchangeRateServiceThread extends Thread {
             }
         } catch (StatusRuntimeException ex) {
             System.out.println(("RPC failed: "+ ex.getStatus()));
-            return;
         }
     }
 

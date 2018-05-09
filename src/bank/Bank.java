@@ -38,10 +38,13 @@ public class Bank {
         List<Currency> currencies = askForCurrencies();
 
         Bank bank = new Bank("localhost", PORT, currencies);
+        bank.start();
+    }
 
-        bank.startBankService();
-        bank.joinBankExchangeRateThread();
-        bank.shutdownCurrencyServerChannel();
+    public void start() throws InterruptedException {
+        startBankService();
+        joinBankExchangeRateThread();
+//        shutdownCurrencyServerChannel();
     }
 
     public void shutdownCurrencyServerChannel() throws InterruptedException {
