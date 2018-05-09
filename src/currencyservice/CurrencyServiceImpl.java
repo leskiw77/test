@@ -10,13 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CurrencyServiceImpl extends CurrencyServiceImplBase {
-    private Map<Currency, Float> exchangeRates = new HashMap<>();
+    private final CurrencyRates currencyRates;
 
     public CurrencyServiceImpl() {
-        exchangeRates.put(Currency.PLN, 1f);
-        exchangeRates.put(Currency.EUR, 4.22f);
-        exchangeRates.put(Currency.USD, 3.61f);
-        exchangeRates.put(Currency.GBP, 4.89f);
+        this.currencyRates = CurrencyRates.getInstance();
     }
 
     @Override
@@ -27,25 +24,16 @@ public class CurrencyServiceImpl extends CurrencyServiceImplBase {
                     ExchangeRate exchangeRate = ExchangeRate
                             .newBuilder()
                             .setCurrency(currency)
-                            .setRate(exchangeRates.get(currency))
+                            .setRate(currencyRates.getExchangeRates().get(currency))
                             .build();
                     responseObserver.onNext(exchangeRate);
                 }
-                modifyRates();
+                currencyRates.modifyRates();
                 Thread.sleep(5000);
             }
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
         responseObserver.onCompleted();
-    }
-
-    private void modifyRates() {
-        for (Currency currency : exchangeRates.keySet()) {
-            if (currency != Currency.PLN) {
-                float rate = (float) (exchangeRates.get(currency) + (Math.random()-0.5) / 20);
-                exchangeRates.put(currency, rate);
-            }
-        }
     }
 }
