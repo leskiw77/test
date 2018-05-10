@@ -23,7 +23,11 @@ package Bank;
 public interface BankService extends com.zeroc.Ice.Object
 {
     AccountPrx createAccount(PersonData personData, MoneyAmount monthIncome, com.zeroc.Ice.Current current)
-        throws UnsupportedCurrency;
+        throws AlreadyCreated,
+               UnsupportedCurrency;
+
+    AccountPrx getAccountForGuid(String guid, com.zeroc.Ice.Current current)
+        throws NoSuchAccount;
 
     static final String[] _iceIds =
     {
@@ -65,9 +69,25 @@ public interface BankService extends com.zeroc.Ice.Object
         return inS.setResult(ostr);
     }
 
+    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_getAccountForGuid(BankService obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+        throws com.zeroc.Ice.UserException
+    {
+        com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
+        com.zeroc.Ice.InputStream istr = inS.startReadParams();
+        String iceP_guid;
+        iceP_guid = istr.readString();
+        inS.endReadParams();
+        AccountPrx ret = obj.getAccountForGuid(iceP_guid, current);
+        com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
+        ostr.writeProxy(ret);
+        inS.endWriteParams(ostr);
+        return inS.setResult(ostr);
+    }
+
     final static String[] _iceOps =
     {
         "createAccount",
+        "getAccountForGuid",
         "ice_id",
         "ice_ids",
         "ice_isA",
@@ -92,17 +112,21 @@ public interface BankService extends com.zeroc.Ice.Object
             }
             case 1:
             {
-                return com.zeroc.Ice.Object._iceD_ice_id(this, in, current);
+                return _iceD_getAccountForGuid(this, in, current);
             }
             case 2:
             {
-                return com.zeroc.Ice.Object._iceD_ice_ids(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_id(this, in, current);
             }
             case 3:
             {
-                return com.zeroc.Ice.Object._iceD_ice_isA(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_ids(this, in, current);
             }
             case 4:
+            {
+                return com.zeroc.Ice.Object._iceD_ice_isA(this, in, current);
+            }
+            case 5:
             {
                 return com.zeroc.Ice.Object._iceD_ice_ping(this, in, current);
             }

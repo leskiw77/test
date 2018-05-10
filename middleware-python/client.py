@@ -46,18 +46,21 @@ with Ice.initialize(sys.argv, 'config.client') as communicator:
                 except Bank.UnsupportedCurrency as e:
                     print('You currency is not supported')
                     continue
+                except Bank.AlreadyCreated:
+                    print('Duplicated user pesel')
+                    continue
 
                 print('You are a {} user, your guid is {}'.format(account.getAccountType(), account.getGuid()))
                 accounts[account.getGuid()] = account
             elif c.split(' ')[0].strip() == 'log':
                 guid = c.split(' ')[1].strip()
 
-                if guid not in accounts:
+                try:
+                    account = bank.getAccountForGuid(guid)
+                    print('Logged in')
+                except Bank.NoSuchAccount:
                     print('No user with such guid')
                     continue
-
-                print('Logged in')
-                account = accounts[guid]
 
                 print('Choose action: amount - check your account \n'
                       '               loan - take a loan')

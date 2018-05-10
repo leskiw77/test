@@ -23,17 +23,23 @@ package Bank;
 public interface BankServicePrx extends com.zeroc.Ice.ObjectPrx
 {
     default AccountPrx createAccount(PersonData personData, MoneyAmount monthIncome)
-        throws UnsupportedCurrency
+        throws AlreadyCreated,
+               UnsupportedCurrency
     {
         return createAccount(personData, monthIncome, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
     default AccountPrx createAccount(PersonData personData, MoneyAmount monthIncome, java.util.Map<String, String> context)
-        throws UnsupportedCurrency
+        throws AlreadyCreated,
+               UnsupportedCurrency
     {
         try
         {
             return _iceI_createAccountAsync(personData, monthIncome, context, true).waitForResponseOrUserEx();
+        }
+        catch(AlreadyCreated ex)
+        {
+            throw ex;
         }
         catch(UnsupportedCurrency ex)
         {
@@ -71,7 +77,59 @@ public interface BankServicePrx extends com.zeroc.Ice.ObjectPrx
 
     static final Class<?>[] _iceE_createAccount =
     {
+        AlreadyCreated.class,
         UnsupportedCurrency.class
+    };
+
+    default AccountPrx getAccountForGuid(String guid)
+        throws NoSuchAccount
+    {
+        return getAccountForGuid(guid, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+    }
+
+    default AccountPrx getAccountForGuid(String guid, java.util.Map<String, String> context)
+        throws NoSuchAccount
+    {
+        try
+        {
+            return _iceI_getAccountForGuidAsync(guid, context, true).waitForResponseOrUserEx();
+        }
+        catch(NoSuchAccount ex)
+        {
+            throw ex;
+        }
+        catch(com.zeroc.Ice.UserException ex)
+        {
+            throw new com.zeroc.Ice.UnknownUserException(ex.ice_id(), ex);
+        }
+    }
+
+    default java.util.concurrent.CompletableFuture<AccountPrx> getAccountForGuidAsync(String guid)
+    {
+        return _iceI_getAccountForGuidAsync(guid, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+    }
+
+    default java.util.concurrent.CompletableFuture<AccountPrx> getAccountForGuidAsync(String guid, java.util.Map<String, String> context)
+    {
+        return _iceI_getAccountForGuidAsync(guid, context, false);
+    }
+
+    default com.zeroc.IceInternal.OutgoingAsync<AccountPrx> _iceI_getAccountForGuidAsync(String iceP_guid, java.util.Map<String, String> context, boolean sync)
+    {
+        com.zeroc.IceInternal.OutgoingAsync<AccountPrx> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getAccountForGuid", null, sync, _iceE_getAccountForGuid);
+        f.invoke(true, context, null, ostr -> {
+                     ostr.writeString(iceP_guid);
+                 }, istr -> {
+                     AccountPrx ret;
+                     ret = AccountPrx.uncheckedCast(istr.readProxy());
+                     return ret;
+                 });
+        return f;
+    }
+
+    static final Class<?>[] _iceE_getAccountForGuid =
+    {
+        NoSuchAccount.class
     };
 
     /**

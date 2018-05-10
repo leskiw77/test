@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -41,14 +40,9 @@ public class Bank {
         bank.start();
     }
 
-    public void start() throws InterruptedException {
+    public void start(){
         startBankService();
         joinBankExchangeRateThread();
-//        shutdownCurrencyServerChannel();
-    }
-
-    public void shutdownCurrencyServerChannel() throws InterruptedException {
-        channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
 
     public void joinBankExchangeRateThread() {

@@ -351,6 +351,44 @@ if 'InsufficientAccount' not in _M_Bank.__dict__:
     _M_Bank.InsufficientAccount = InsufficientAccount
     del InsufficientAccount
 
+if 'NoSuchAccount' not in _M_Bank.__dict__:
+    _M_Bank.NoSuchAccount = Ice.createTempClass()
+    class NoSuchAccount(Ice.UserException):
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            return IcePy.stringifyException(self)
+
+        __repr__ = __str__
+
+        _ice_id = '::Bank::NoSuchAccount'
+
+    _M_Bank._t_NoSuchAccount = IcePy.defineException('::Bank::NoSuchAccount', NoSuchAccount, (), False, None, ())
+    NoSuchAccount._ice_type = _M_Bank._t_NoSuchAccount
+
+    _M_Bank.NoSuchAccount = NoSuchAccount
+    del NoSuchAccount
+
+if 'AlreadyCreated' not in _M_Bank.__dict__:
+    _M_Bank.AlreadyCreated = Ice.createTempClass()
+    class AlreadyCreated(Ice.UserException):
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            return IcePy.stringifyException(self)
+
+        __repr__ = __str__
+
+        _ice_id = '::Bank::AlreadyCreated'
+
+    _M_Bank._t_AlreadyCreated = IcePy.defineException('::Bank::AlreadyCreated', AlreadyCreated, (), False, None, ())
+    AlreadyCreated._ice_type = _M_Bank._t_AlreadyCreated
+
+    _M_Bank.AlreadyCreated = AlreadyCreated
+    del AlreadyCreated
+
 _M_Bank._t_Account = IcePy.defineValue('::Bank::Account', Ice.Value, -1, (), False, True, None, ())
 
 if 'AccountPrx' not in _M_Bank.__dict__:
@@ -480,6 +518,18 @@ if 'BankServicePrx' not in _M_Bank.__dict__:
         def end_createAccount(self, _r):
             return _M_Bank.BankService._op_createAccount.end(self, _r)
 
+        def getAccountForGuid(self, guid, context=None):
+            return _M_Bank.BankService._op_getAccountForGuid.invoke(self, ((guid, ), context))
+
+        def getAccountForGuidAsync(self, guid, context=None):
+            return _M_Bank.BankService._op_getAccountForGuid.invokeAsync(self, ((guid, ), context))
+
+        def begin_getAccountForGuid(self, guid, _response=None, _ex=None, _sent=None, context=None):
+            return _M_Bank.BankService._op_getAccountForGuid.begin(self, ((guid, ), _response, _ex, _sent, context))
+
+        def end_getAccountForGuid(self, _r):
+            return _M_Bank.BankService._op_getAccountForGuid.end(self, _r)
+
         @staticmethod
         def checkedCast(proxy, facetOrContext=None, context=None):
             return _M_Bank.BankServicePrx.ice_checkedCast(proxy, '::Bank::BankService', facetOrContext, context)
@@ -512,6 +562,9 @@ if 'BankServicePrx' not in _M_Bank.__dict__:
         def createAccount(self, personData, monthIncome, current=None):
             raise NotImplementedError("servant method 'createAccount' not implemented")
 
+        def getAccountForGuid(self, guid, current=None):
+            raise NotImplementedError("servant method 'getAccountForGuid' not implemented")
+
         def __str__(self):
             return IcePy.stringify(self, _M_Bank._t_BankServiceDisp)
 
@@ -520,7 +573,8 @@ if 'BankServicePrx' not in _M_Bank.__dict__:
     _M_Bank._t_BankServiceDisp = IcePy.defineClass('::Bank::BankService', BankService, (), None, ())
     BankService._ice_type = _M_Bank._t_BankServiceDisp
 
-    BankService._op_createAccount = IcePy.Operation('createAccount', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), _M_Bank._t_PersonData, False, 0), ((), _M_Bank._t_MoneyAmount, False, 0)), (), ((), _M_Bank._t_AccountPrx, False, 0), (_M_Bank._t_UnsupportedCurrency,))
+    BankService._op_createAccount = IcePy.Operation('createAccount', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), _M_Bank._t_PersonData, False, 0), ((), _M_Bank._t_MoneyAmount, False, 0)), (), ((), _M_Bank._t_AccountPrx, False, 0), (_M_Bank._t_UnsupportedCurrency, _M_Bank._t_AlreadyCreated))
+    BankService._op_getAccountForGuid = IcePy.Operation('getAccountForGuid', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), ((), _M_Bank._t_AccountPrx, False, 0), (_M_Bank._t_NoSuchAccount,))
 
     _M_Bank.BankService = BankService
     del BankService

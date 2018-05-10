@@ -28,6 +28,10 @@ module Bank
 
   exception InsufficientAccount{}
 
+  exception NoSuchAccount{}
+
+  exception AlreadyCreated{};
+
   interface Account {
     MoneyAmount getCreditCost(MoneyAmount amount, Date finishDate) throws UnsupportedCurrency, InsufficientAccount;
     MoneyAmount getActualAmount();
@@ -36,7 +40,8 @@ module Bank
   }
 
   interface BankService {
-    Account* createAccount(PersonData personData, MoneyAmount monthIncome) throws UnsupportedCurrency;
+    Account* createAccount(PersonData personData, MoneyAmount monthIncome) throws UnsupportedCurrency, AlreadyCreated;
+    Account* getAccountForGuid(string guid) throws NoSuchAccount;
   };
 };
 

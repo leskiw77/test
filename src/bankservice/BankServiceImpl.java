@@ -2,27 +2,53 @@ package bankservice;
 
 import Bank.*;
 import bank.ExchangeRateServiceThread;
+import com.zeroc.Ice.AlreadyRegisteredException;
 import com.zeroc.Ice.Current;
 import com.zeroc.Ice.Identity;
 import sr.grpc.gen.Currency;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BankServiceImpl implements BankService {
     private final ExchangeRateServiceThread exchangeRateService;
+    private final Map<String, AccountPrx> guidAccountMap;
 
     public BankServiceImpl(ExchangeRateServiceThread exchangeRateService) {
         this.exchangeRateService = exchangeRateService;
+        this.guidAccountMap = new HashMap<>();
     }
 
     @Override
-    public AccountPrx createAccount(PersonData personData, MoneyAmount monthIncome, Current current) throws UnsupportedCurrency {
+    public AccountPrx createAccount(PersonData personData, MoneyAmount monthIncome, Current current) throws UnsupportedCurrency, AlreadyCreated {
         AccountType type = decideAccountType(monthIncome);
 
         System.out.println("Create user: " + personData.name + " " + personData.lastName + " " + personData.pesel +
                 ", account type: " + type);
 
-        return AccountPrx.uncheckedCast(current.adapter.add(
-                new AccountImpl(personData, monthIncome, type, exchangeRateService),
-                new Identity(personData.pesel, type.name())));
+
+        AccountImpl account = new AccountImpl(personData, monthIncome, type, exchangeRateService);
+
+        AccountPrx accountPrx;
+        try {
+            accountPrx = AccountPrx.uncheckedCast(current.adapter.add(
+                    account, new Identity(personData.pesel, "pesel")));
+        }catch (AlreadyRegisteredException e){
+            System.out.println("User with pesel: " + personData.pesel + " already created");
+            throw new AlreadyCreated();
+        }
+        guidAccountMap.put(account.getGuid(), accountPrx);
+
+        return accountPrx;
+    }
+
+    @Override
+    public AccountPrx getAccountForGuid(String guid, Current current) throws NoSuchAccount {
+        if(guidAccountMap.containsKey(guid)){
+            return guidAccountMap.get(guid);
+        }else{
+            throw new NoSuchAccount();
+        }
     }
 
     private AccountType decideAccountType(MoneyAmount monthIncome) throws UnsupportedCurrency {
